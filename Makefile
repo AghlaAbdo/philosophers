@@ -13,12 +13,10 @@ OBJS	= $(addprefix $(OBJ_DR),$(SRCS:.c=.o))
 all: $(NAME) 
 
 $(NAME): $(OBJS)
-	@echo "Building $@.."
-	@$(CC) $(CFLAGS) $(OBJS) -o $@
+	$(CC) $(CFLAGS) $(OBJS) -o $@
 
 $(OBJ_DR)%.o: %.c $(HEADER) 
-	@echo "Compiling $<"
-	mkdir -p $(@D)
+	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
