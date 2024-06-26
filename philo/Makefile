@@ -1,12 +1,12 @@
-NAME 	= ./philo/philo
+NAME 	= philo
 CC 		= cc
 CFLAGS	= #-Wall -Wextra -Werror
-HEADER	= ./philo/philo.h
-OBJ_DR 	= ./philo/objs/
+HEADER	= philo.h
+OBJ_DR 	= objs/
 
-SRCS	=	./philo/main.c	\
-			./philo/grbg_cllctor.c	\
-			./philo/tools_1.c
+SRCS	=	main.c	\
+			grbg_cllctor.c	\
+			tools_1.c
 				
 OBJS	= $(addprefix $(OBJ_DR),$(SRCS:.c=.o))
 
