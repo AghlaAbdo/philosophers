@@ -6,11 +6,25 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/25 20:20:36 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/27 22:21:09 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	i = 0;
+	while (s1[i] && s2[i])
+	{
+		if (s1[i] != s2[i])
+			return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+		i++;
+	}
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
 
 long long	ft_atol(const char *str)
 {
@@ -39,4 +53,20 @@ long long	ft_atol(const char *str)
 			return (0);
 	}
 	return (n * sign);
+}
+
+long long	my_gettime(char *time)
+{
+	struct timeval	tv;
+
+	if (gettimeofday(&tv, NULL))
+		clean_exit("error getting time of day");
+	if (!ft_strcmp(time, "SEC"))
+		return (tv.tv_sec + (tv.tv_usec / 1e6));
+	else if (!ft_strcmp(time, "MIL_SEC"))
+		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
+	else if (ft_strcmp(time, "MIC_SEC"))
+		return ((tv.tv_sec * 1e6) + tv.tv_sec);
+	else
+		clean_exit("check my_gettime() args");
 }

@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/26 22:07:54 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/27 21:44:13 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 # include <pthread.h>
 # include <limits.h>
 # include <stdbool.h>
+# include <sys/time.h>
 
 typedef struct s_data t_data;
 typedef pthread_mutex_t t_mtx;
@@ -42,8 +43,8 @@ typedef struct s_philo
 	bool		full;
 	pthread_t	thread;
 	t_data		*data;
-	t_fork		first_fork;
-	t_fork		second_fork;
+	t_fork		*first_fork;
+	t_fork		*second_fork;
 	
 }	t_philo;
 
@@ -61,7 +62,10 @@ typedef struct s_data
 	t_philo		*philos;
 }	t_data;
 
+long long	my_gettime(char *time);
 long long	ft_atol(const char *str);
 void		*ft_malloc(size_t size, int mode);
+int			ft_strcmp(char *s1, char *s2);
+void		clean_exit(char *err);
 
 #endif
