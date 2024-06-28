@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/27 21:44:13 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/28 20:02:51 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@ typedef struct s_philo
 	int			id;
 	int			meals;
 	bool		full;
+	long long	last_meal;
+	t_mtx		last_meal_mtx;
 	pthread_t	thread;
 	t_data		*data;
 	t_fork		*first_fork;
@@ -54,10 +56,14 @@ typedef struct s_data
 	long long	die_time;
 	long long	eat_time;
 	long long	slp_time;
-	long long	meals_nb;
-	long long	ready_thrds;
+	int			meals_nb;
 	long long	simul_strt;
-	t_mtx		ready;
+	bool		ready;
+	bool		end;
+	pthread_t	monitor;
+	t_mtx		print;
+	t_mtx		end_mtx;
+	t_mtx		ready_mtx;
 	t_fork		*forks;
 	t_philo		*philos;
 }	t_data;
@@ -67,5 +73,11 @@ long long	ft_atol(const char *str);
 void		*ft_malloc(size_t size, int mode);
 int			ft_strcmp(char *s1, char *s2);
 void		clean_exit(char *err);
+
+// getter and setters
+bool		get_bool(t_mtx *mtx, bool *value);
+void		set_bool(t_mtx *mtx, bool *set, bool value);
+long long	get_long(t_mtx *mtx, long long *value);
+void		set_long(t_mtx *mtx, long long *set, long long value);
 
 #endif

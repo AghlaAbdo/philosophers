@@ -6,7 +6,8 @@ OBJ_DR 	= objs/
 
 SRCS	=	main.c	\
 			grbg_cllctor.c	\
-			tools_1.c
+			tools_1.c		\
+			getters_setters.c
 				
 OBJS	= $(addprefix $(OBJ_DR),$(SRCS:.c=.o))
 
