@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:21:28 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/28 22:22:39 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/29 22:26:08 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,29 +90,52 @@ void	wait_rest(t_data *data)
 void	print_status(t_data *data, t_philo *philo, char *status)
 {
 	pthread_mutex_lock(&data->print);
-	if (!data->end)
+	if (!get_bool(&data->end_mtx, &data->end))
 	{
-		if (!ft_strcmp(status, "FORK_1"))
+		if (!ft_strcmp(status, "FORK_1") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d has taken a first fork: %lld\n",my_gettime("MIL_SEC") - data->simul_strt,
 					philo->id, philo->first_fork->id);
-		else if (!ft_strcmp(status, "FORK_2"))
+		else if (!ft_strcmp(status, "FORK_2") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d has taken second fork: %lld\n",my_gettime("MIL_SEC") - data->simul_strt,
 					philo->id, philo->second_fork->id);
-		else if (!ft_strcmp(status, "EAT"))
+		else if (!ft_strcmp(status, "EAT") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d is eating\n",my_gettime("MIL_SEC") - data->simul_strt,
 					philo->id);
-		else if (!ft_strcmp(status, "SLEEP"))
+		else if (!ft_strcmp(status, "SLEEP") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d is sleeping\n",my_gettime("MIL_SEC") - philo->data->simul_strt,
 				philo->id);
-		else if (!ft_strcmp(status, "THINK"))
+		else if (!ft_strcmp(status, "THINK") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d is thinking\n",my_gettime("MIL_SEC") - philo->data->simul_strt,
 				philo->id);
-		else if (!ft_strcmp(status, "DIE"))
+		else if (!ft_strcmp(status, "DIE") && !get_bool(&data->end_mtx, &data->end))
 			printf("%lld %d died\n", my_gettime("MIL_SEC") - data->simul_strt, philo->id);
 		else
 			clean_exit("check print_status() args\n");
 	}
 	pthread_mutex_unlock(&data->print);
+}
+
+void	my_usleep(long long usec, t_data *data)
+{
+	long long	start;
+	long long	elapsed;
+	long long	rem;
+
+	start = my_gettime("MIC_SEC");
+	while (my_gettime("MIC_SEC") - start < usec)
+	{
+		if (get_bool(&data->end_mtx, &data->end))
+			break ;
+		elapsed = my_gettime("MIC_SEC") - start;
+		rem = usec - elapsed;
+		if (rem > 1e3)
+			usleep(rem / 2);
+		else
+		{
+			while(my_gettime("MIC_SEC") - start < usec)
+				;
+		}
+	}
 }
 
 void	eat(t_philo *philo)
@@ -129,10 +152,46 @@ void	eat(t_philo *philo)
 	if (data->meals_nb > 0 && philo->meals == data->meals_nb)
 		philo->full = true;
 	if (!data->end)
-	usleep(data->eat_time);
+	if (!get_bool(&data->end_mtx, &data->end))
+		usleep(data->eat_time);
 	set_long(&philo->last_meal_mtx, &philo->last_meal, my_gettime("MIL_SEC"));
 	pthread_mutex_unlock(&philo->second_fork->fork);
 	pthread_mutex_unlock(&philo->first_fork->fork);
+}
+
+void	sync_philos(t_philo *philo)
+{
+	long long	think;
+	// printf("philo nb: %lld\ndie time: %lld\neat time: %lld\nsleep time: %lld\n",
+		// philo->data->philo_nb, philo->data->die_time, philo->data->eat_time, philo->data->slp_time);
+	if (philo->data->philo_nb % 2 == 0)
+	{
+		if (philo->id % 2 == 0)
+			usleep(3e4);
+	}
+	else
+	{
+		if (philo->id % 2)
+		{
+			think = philo->data->eat_time * 2 - philo->data->slp_time;
+			if (think > 0)
+			{
+				usleep(think * 0.45);
+			}
+		}
+	}
+}
+
+void	think(t_data *data, t_philo *philo)
+{
+	long long	think;
+
+	print_status(data, philo, "THINK");
+	if (data->philo_nb % 2 == 0)
+		return ;
+	think = philo->data->eat_time * 2 - philo->data->slp_time;
+	if (think > 0)
+		usleep(think * 0.45);
 }
 
 void	*simulation(void *arg)
@@ -143,8 +202,10 @@ void	*simulation(void *arg)
 	philo = (t_philo *)arg;
 	data = philo->data;
 	wait_rest(philo->data);
+	set_long(&philo->last_meal_mtx, &philo->last_meal, my_gettime("MIL_SEC"));
 	if (!data->meals_nb)
 		philo->full = true;
+	sync_philos(philo);
 	while (!get_bool(&data->end_mtx, &data->end))
 	{
 		if (philo->full)
@@ -153,8 +214,7 @@ void	*simulation(void *arg)
 		print_status(data, philo, "SLEEP");
 		if (!get_bool(&data->end_mtx, &data->end))
 			usleep(philo->data->slp_time);
-		print_status(data, philo, "THINK");
-			usleep(100);
+		think(data, philo);
 	}
 	return (NULL);
 }
@@ -165,16 +225,17 @@ void	*monitor(void *arg)
 	int		i;
 
 	data = (t_data *)arg;
+	usleep(4e4);
 	while (!get_bool(&data->end_mtx, &data->end))
 	{
 		i = -1;
-		while (++i < data->philo_nb && !get_bool(&data->end_mtx, &data->end))
+		while (++i < data->philo_nb)
 		{
 			if (my_gettime("MIL_SEC") - get_long(&data->philos[i].last_meal_mtx, &data->philos[i].last_meal)
 					>= data->die_time)
 			{
-				// printf("time: %lld %d died\n", my_gettime("MIL_SEC") - get_long(&data->philos[i].last_meal_mtx, &data->philos[i].last_meal),
-					// data->philos[i].id);
+				printf("philo last meal: %lld time: %lld %d died\n",my_gettime("MIL_SEC") - get_long(&data->philos[i].last_meal_mtx, &data->philos[i].last_meal), my_gettime("MIL_SEC") - data->simul_strt,
+					data->philos[i].id);
 				// write(1, "is dead\n", 8);
 				// printf("%lld %d died\n", my_gettime("MIL_SEC") - data->simul_strt, data->philos[i].id);
 				print_status(data, data->philos + i, "DIE");
