@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/28 20:02:51 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/30 13:27:23 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,10 @@ typedef struct s_philo
 	int			id;
 	int			meals;
 	bool		full;
+	bool		is_dead;
 	long long	last_meal;
 	t_mtx		last_meal_mtx;
+	t_mtx		dead_mtx;
 	pthread_t	thread;
 	t_data		*data;
 	t_fork		*first_fork;
