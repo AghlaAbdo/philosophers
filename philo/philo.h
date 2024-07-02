@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/30 13:27:23 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/02 22:21:43 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,16 @@ typedef struct s_data
 	long long	die_time;
 	long long	eat_time;
 	long long	slp_time;
-	int			meals_nb;
 	long long	simul_strt;
+	long long	running;
+	int			meals_nb;
 	bool		ready;
 	bool		end;
 	pthread_t	monitor;
 	t_mtx		print;
 	t_mtx		end_mtx;
 	t_mtx		ready_mtx;
+	t_mtx		run_mtx;
 	t_fork		*forks;
 	t_philo		*philos;
 }	t_data;
@@ -81,5 +83,7 @@ bool		get_bool(t_mtx *mtx, bool *value);
 void		set_bool(t_mtx *mtx, bool *set, bool value);
 long long	get_long(t_mtx *mtx, long long *value);
 void		set_long(t_mtx *mtx, long long *set, long long value);
+void		increase_long(t_mtx *mtx, long long *increase);
+void		decrease_long(t_mtx *mtx, long long *decrease);
 
 #endif

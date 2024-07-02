@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 12:47:40 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/28 12:57:22 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/02 22:19:45 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,4 +44,19 @@ void	set_long(t_mtx *mtx, long long *set, long long value)
 	pthread_mutex_lock(mtx);
 	*set = value;
 	pthread_mutex_unlock(mtx);
+}
+
+void	increase_long(t_mtx *mtx, long long *increase)
+{
+	pthread_mutex_lock(mtx);
+	(*increase)++;
+	pthread_mutex_unlock(mtx);
+}
+
+void	decrease_long(t_mtx *mtx, long long *decrease)
+{
+	pthread_mutex_lock(mtx);
+	(*decrease)--;
+	pthread_mutex_unlock(mtx);
+	
 }

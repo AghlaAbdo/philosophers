@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/29 22:20:41 by thedon           ###   ########.fr       */
+/*   Updated: 2024/06/30 18:46:48 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ long long	my_gettime(char *time)
 	else if (!ft_strcmp(time, "MIL_SEC"))
 		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
 	else if (!ft_strcmp(time, "MIC_SEC"))
-		return ((tv.tv_sec * 1e6) + tv.tv_sec);
+		return ((tv.tv_sec * 1e6) + tv.tv_usec);
 	else
 		clean_exit("check my_gettime() args");
 }
