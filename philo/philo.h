@@ -6,7 +6,7 @@
 /*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/02 22:21:43 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/03 20:23:09 by thedon           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,26 @@ typedef struct s_data
 	long long	simul_strt;
 	long long	running;
 	int			meals_nb;
-	bool		ready;
 	bool		end;
 	pthread_t	monitor;
 	t_mtx		print;
 	t_mtx		end_mtx;
-	t_mtx		ready_mtx;
 	t_mtx		run_mtx;
 	t_fork		*forks;
 	t_philo		*philos;
 }	t_data;
 
+void		data_init(t_data *data, char **av);
+void		threads_init(t_data *data);
+void		print_status(t_data *data, t_philo *philo, char *status);
 long long	my_gettime(char *time);
 long long	ft_atol(const char *str);
 void		*ft_malloc(size_t size, int mode);
 int			ft_strcmp(char *s1, char *s2);
 void		clean_exit(char *err);
+void		*simulation(void *arg);
+void		*monitor(void *arg);
+void		wait_rest(t_data *data);
 
 // getter and setters
 bool		get_bool(t_mtx *mtx, bool *value);
