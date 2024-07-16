@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/03 20:23:09 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/16 17:21:46 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,9 +74,11 @@ void		data_init(t_data *data, char **av);
 void		threads_init(t_data *data);
 void		print_status(t_data *data, t_philo *philo, char *status);
 long long	my_gettime(char *time);
+void		my_usleep(long long usec);
 long long	ft_atol(const char *str);
 void		*ft_malloc(size_t size, int mode);
-int			ft_strcmp(char *s1, char *s2);
+int			ft_cmp(char *s1, char *s2);
+int			ft_len(char *str);
 void		clean_exit(char *err);
 void		*simulation(void *arg);
 void		*monitor(void *arg);

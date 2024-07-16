@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:21:28 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/03 20:20:44 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/16 17:04:33 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,29 +25,6 @@ void	wait_rest(t_data *data)
 		;
 }
 
-void	my_usleep(long long usec, t_data *data)
-{
-	long long	start;
-	long long	elapsed;
-	long long	rem;
-
-	start = my_gettime("MIC_SEC");
-	while (my_gettime("MIC_SEC") - start < usec)
-	{
-		if (get_bool(&data->end_mtx, &data->end))
-			break ;
-		elapsed = my_gettime("MIC_SEC") - start;
-		rem = usec - elapsed;
-		if (rem > 1e3)
-			usleep(rem / 2);
-		else
-		{
-			while(my_gettime("MIC_SEC") - start < usec)
-				;
-		}
-	}
-}
-
 void	*monitor(void *arg)
 {
 	t_data	*data;
@@ -62,7 +39,7 @@ void	*monitor(void *arg)
 		while (++i < data->philo_nb && get_long(&data->run_mtx, &data->running))
 		{
 			philo = data->philos + i;
-			usleep(2e3);
+	my_usleep(2e3);
 			last_meal = get_long(&data->philos[i].last_meal_mtx, &data->philos[i].last_meal);
 			// if (get_bool(&philo->dead_mtx, &philo->is_dead))
 			if (my_gettime("MIL_SEC") - last_meal > data->die_time)
@@ -78,7 +55,44 @@ void	*monitor(void *arg)
 			}
 		}
 	}
-	
+	return (NULL);
+}
+
+int	check_chars(char **av)
+{
+	int	i;
+	int	j;
+
+	i = 0;
+	while (av[++i])
+	{
+		j = -1;
+		while (av[i][++j])
+		{
+			if (!(av[i][j] >= '0' && av[i][j] <= '9'))
+				return (1);
+		}
+	}
+	return (0);
+}
+
+int	parse_input(char **av)
+{
+	long long	n;
+	int			i;
+	int			j;
+
+	i = 0;
+	j = -1;
+	(*av)++;
+	if (check_chars(av))
+		return (1);
+	while (av[++i])
+	{
+		if (ft_len(av[i]) > 10 || ft_atol(av[i]) > 2147483647)
+			return (1);
+	}
+	return (0);
 }
 
 int main(int ac, char **av)
@@ -88,6 +102,8 @@ int main(int ac, char **av)
 
 	i = -1;
 	if (ac != 5 && ac != 6)
+		return (1);
+	if (parse_input(av))
 		return (1);
 	data_init(&data, av);
 	threads_init(&data);

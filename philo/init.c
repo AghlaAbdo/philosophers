@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 18:54:49 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/03 20:22:30 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/16 13:38:11 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,13 @@ static void	philos_init(t_data *data, t_philo *philo, int i)
 			clean_exit("error in mutex init");
 		data->forks[i].id = i;
 	}
-	i = -1;
-	while (++i < data->philo_nb)
-	{
-		printf("philo id: %d\n", data->philos[i].id);
-		printf("\tfirst fork id: %lld\n", data->philos[i].first_fork->id);
-		printf("\tsecond fork id: %lld\n", data->philos[i].second_fork->id);
-	}
+	// i = -1;
+	// while (++i < data->philo_nb)
+	// {
+	// 	printf("philo id: %d\n", data->philos[i].id);
+	// 	printf("\tfirst fork id: %lld\n", data->philos[i].first_fork->id);
+	// 	printf("\tsecond fork id: %lld\n", data->philos[i].second_fork->id);
+	// }
 }
 
 void	data_init(t_data *data, char **av)
@@ -56,8 +56,8 @@ void	data_init(t_data *data, char **av)
 	data->meals_nb = -1;
 	if (av[5])
 		data->meals_nb = (int)ft_atol(av[5]);
-	printf("philo nb: %lld\ndie time: %lld\neat time: %lld\nslp time: %lld\n", data->philo_nb,
-		data->die_time, data->eat_time, data->slp_time);
+	// printf("philo nb: %lld\ndie time: %lld\neat time: %lld\nslp time: %lld\n", data->philo_nb,
+		// data->die_time, data->eat_time, data->slp_time);
 	data->forks = ft_malloc(sizeof(t_fork) * data->philo_nb, 0);
 	data->philos = ft_malloc(sizeof(t_philo) * data->philo_nb, 0);
 	if (pthread_mutex_init(&data->end_mtx, NULL)
@@ -77,8 +77,8 @@ void	threads_init(t_data *data)
 		if (pthread_create(&data->philos[i].thread, NULL, &simulation, &data->philos[i]))
 			clean_exit("error creating thread");
 	}
-	wait_rest(data);
 	data->simul_strt = my_gettime("MIL_SEC");
+	wait_rest(data);
 	if (pthread_create(&data->monitor, NULL, &monitor, data))
 		clean_exit("error creating thread");
 }

@@ -3,16 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   tools_1.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/06/30 18:46:48 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/16 17:21:46 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_strcmp(char *s1, char *s2)
+int	ft_len(char *str)
+{
+	int	 i;
+
+	i = 0;
+	while (str[i])
+		i++;
+	return (i);
+}
+
+int	ft_cmp(char *s1, char *s2)
 {
 	int	i;
 
@@ -61,12 +71,27 @@ long long	my_gettime(char *time)
 
 	if (gettimeofday(&tv, NULL))
 		clean_exit("error getting time of day");
-	if (!ft_strcmp(time, "SEC"))
+	if (!ft_cmp(time, "SEC"))
 		return (tv.tv_sec + (tv.tv_usec / 1e6));
-	else if (!ft_strcmp(time, "MIL_SEC"))
+	else if (!ft_cmp(time, "MIL_SEC"))
 		return ((tv.tv_sec * 1e3) + (tv.tv_usec / 1e3));
-	else if (!ft_strcmp(time, "MIC_SEC"))
+	else if (!ft_cmp(time, "MIC_SEC"))
 		return ((tv.tv_sec * 1e6) + tv.tv_usec);
 	else
+	{
 		clean_exit("check my_gettime() args");
+		return (1);
+	}
+}
+
+void	my_usleep(long long usec)
+{
+	long long	start;
+	start = my_gettime("MIC_SEC");
+	while (1)
+	{
+		if (my_gettime("MIC_SEC") - start >= usec)
+			break;
+		// usleep(100);
+	}
 }
