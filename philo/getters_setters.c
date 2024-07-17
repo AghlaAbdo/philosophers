@@ -3,60 +3,68 @@
 /*                                                        :::      ::::::::   */
 /*   getters_setters.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: thedon <thedon@student.42.fr>              +#+  +:+       +#+        */
+/*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 12:47:40 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/02 22:19:45 by thedon           ###   ########.fr       */
+/*   Updated: 2024/07/17 11:18:10 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-bool	get_bool(t_mtx *mtx, bool *value)
+int	get_bool(t_mtx *mtx, int *value)
 {
-	bool	res;
-	
-	pthread_mutex_lock(mtx);
+	int	res;
+
+	if (pthread_mutex_lock(mtx))
+		return (-1);
 	res = *value;
-	pthread_mutex_unlock(mtx);
+	if (pthread_mutex_unlock(mtx))
+		return (-1);
 	return (res);
 }
 
-void	set_bool(t_mtx *mtx, bool *set, bool value)
+int	set_bool(t_mtx *mtx, int *set, int value)
 {
-	pthread_mutex_lock(mtx);
+	if (pthread_mutex_lock(mtx))
+		return (-1);
 	*set = value;
-	pthread_mutex_unlock(mtx);
+	if (pthread_mutex_unlock(mtx))
+		return (-1);
+	return (0);
 }
 
 long long	get_long(t_mtx *mtx, long long *value)
 {
 	long long	res;
 
-	pthread_mutex_lock(mtx);
+	if (pthread_mutex_lock(mtx))
+		return (-1);
 	res = *value;
-	pthread_mutex_unlock(mtx);
+	if (pthread_mutex_unlock(mtx))
+		return (-1);
 	return (res);
 }
 
-void	set_long(t_mtx *mtx, long long *set, long long value)
+int	set_long(t_mtx *mtx, long long *set, long long value)
 {
-	pthread_mutex_lock(mtx);
+	if (pthread_mutex_lock(mtx))
+		return (-1);
 	*set = value;
-	pthread_mutex_unlock(mtx);
+	if (pthread_mutex_unlock(mtx))
+		return (-1);
+	return (0);
 }
 
-void	increase_long(t_mtx *mtx, long long *increase)
+int	increase_long(t_mtx *mtx, long long *num, char *op)
 {
-	pthread_mutex_lock(mtx);
-	(*increase)++;
-	pthread_mutex_unlock(mtx);
-}
-
-void	decrease_long(t_mtx *mtx, long long *decrease)
-{
-	pthread_mutex_lock(mtx);
-	(*decrease)--;
-	pthread_mutex_unlock(mtx);
-	
+	if (pthread_mutex_lock(mtx))
+		return (-1);
+	if (!ft_cmp(op, "++"))
+		(*num)++;
+	else
+		(*num)--;
+	if (pthread_mutex_unlock(mtx))
+		return (-1);
+	return (0);
 }

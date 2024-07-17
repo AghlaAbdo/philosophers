@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/16 17:21:46 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/07/17 13:21:59 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,11 +18,11 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <limits.h>
-# include <stdbool.h>
+// # include <stdbool.h>
 # include <sys/time.h>
 
-typedef struct s_data t_data;
-typedef pthread_mutex_t t_mtx;
+typedef struct s_data	t_data;
+typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_addr
 {
@@ -40,16 +40,15 @@ typedef struct s_philo
 {
 	int			id;
 	int			meals;
-	bool		full;
-	bool		is_dead;
+	int			full;
+	int			is_dead;
 	long long	last_meal;
-	t_mtx		last_meal_mtx;
+	t_mtx		lstml_mx;
 	t_mtx		dead_mtx;
 	pthread_t	thread;
 	t_data		*data;
 	t_fork		*first_fork;
 	t_fork		*second_fork;
-	
 }	t_philo;
 
 typedef struct s_data
@@ -61,7 +60,7 @@ typedef struct s_data
 	long long	simul_strt;
 	long long	running;
 	int			meals_nb;
-	bool		end;
+	int			end;
 	pthread_t	monitor;
 	t_mtx		print;
 	t_mtx		end_mtx;
@@ -70,26 +69,25 @@ typedef struct s_data
 	t_philo		*philos;
 }	t_data;
 
-void		data_init(t_data *data, char **av);
-void		threads_init(t_data *data);
-void		print_status(t_data *data, t_philo *philo, char *status);
+int			data_init(t_data *data, char **av);
+int			threads_init(t_data *data);
+int			print_status(t_data *data, t_philo *philo, char *status);
 long long	my_gettime(char *time);
-void		my_usleep(long long usec);
+int			my_usleep(long long usec);
 long long	ft_atol(const char *str);
 void		*ft_malloc(size_t size, int mode);
 int			ft_cmp(char *s1, char *s2);
 int			ft_len(char *str);
-void		clean_exit(char *err);
+// void		clean_exit(char *err);
 void		*simulation(void *arg);
 void		*monitor(void *arg);
-void		wait_rest(t_data *data);
+int			wait_rest(t_data *data);
 
 // getter and setters
-bool		get_bool(t_mtx *mtx, bool *value);
-void		set_bool(t_mtx *mtx, bool *set, bool value);
+int			get_bool(t_mtx *mtx, int *value);
+int			set_bool(t_mtx *mtx, int *set, int value);
 long long	get_long(t_mtx *mtx, long long *value);
-void		set_long(t_mtx *mtx, long long *set, long long value);
-void		increase_long(t_mtx *mtx, long long *increase);
-void		decrease_long(t_mtx *mtx, long long *decrease);
+int			set_long(t_mtx *mtx, long long *set, long long value);
+int			increase_long(t_mtx *mtx, long long *num, char *op);
 
 #endif

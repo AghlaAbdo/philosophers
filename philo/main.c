@@ -6,52 +6,78 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:21:28 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/16 17:04:33 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/07/17 13:39:06 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	clean_exit(char *err)
+int	wait_rest(t_data *data)
 {
-	printf("%s\n", err);
-	ft_malloc(0, 1);
-	exit(82);
+	long long	running;
+
+	while (1)
+	{
+		running = get_long(&data->run_mtx, &data->running);
+		if (running == -1)
+			return (1);
+		if (running == data->philo_nb)
+			break ;
+	}
+	return (0);
 }
 
-void	wait_rest(t_data *data)
+void	run_check(t_data *data, long long last_meal, int i)
 {
-	while (get_long(&data->run_mtx, &data->running) != data->philo_nb)
-		;
+	long long	lng;
+
+	lng = get_long(&data->run_mtx, &data->running);
+	if (lng == -1)
+	{
+		set_bool(&data->end_mtx, &data->end, 1);
+		return (NULL);
+	}
+	while (++i < data->philo_nb)
+	{
+		my_usleep(2e3);
+		last_meal = get_long(&data->philos[i].lstml_mx,
+				&data->philos[i].last_meal);
+		if (last_meal == -1)
+			return (NULL);
+		if (my_gettime("MIL_SEC") - last_meal > data->die_time)
+		{
+			if (set_bool(&data->end_mtx, &data->end, 1)
+				|| print_status(data, data->philos + i, "DIE"))
+				return (NULL);
+			break ;
+		}
+	}
 }
 
 void	*monitor(void *arg)
 {
-	t_data	*data;
-	t_philo	*philo;
-	int		i;
+	t_data		*data;
 	long long	last_meal;
+	int			i;
 
 	data = (t_data *)arg;
-	while (!get_bool(&data->end_mtx, &data->end) && get_long(&data->run_mtx, &data->running))
+	while (!get_bool(&data->end_mtx, &data->end)
+		&& get_long(&data->run_mtx, &data->running))
 	{
 		i = -1;
 		while (++i < data->philo_nb && get_long(&data->run_mtx, &data->running))
 		{
-			philo = data->philos + i;
-	my_usleep(2e3);
-			last_meal = get_long(&data->philos[i].last_meal_mtx, &data->philos[i].last_meal);
-			// if (get_bool(&philo->dead_mtx, &philo->is_dead))
+			my_usleep(2e3);
+			last_meal = get_long(&data->philos[i].lstml_mx,
+					&data->philos[i].last_meal);
+			if (last_meal == -1)
+				return (NULL);
 			if (my_gettime("MIL_SEC") - last_meal > data->die_time)
 			{
-				// printf("philo last meal: %lld time: %lld %d died\n",my_gettime("MIL_SEC") - last_meal , my_gettime("MIL_SEC") - data->simul_strt,
-					// data->philos[i].id);
-				// printf("\t%lld monitor philo %d last meal: %lld\n", my_gettime("MIL_SEC") - data->simul_strt, data->philos[i].id, last_meal);
-				// write(1, "is dead\n", 8);
-				// printf("%lld %d died\n", my_gettime("MIL_SEC") - data->simul_strt, data->philos[i].id);
-				print_status(data, data->philos + i, "DIE");
-				set_bool(&data->end_mtx, &data->end, true);
-				break;
+				if (set_bool(&data->end_mtx, &data->end, 1)
+					|| print_status(data, data->philos + i, "DIE"))
+					return (NULL);
+				break ;
 			}
 		}
 	}
@@ -95,9 +121,22 @@ int	parse_input(char **av)
 	return (0);
 }
 
-int main(int ac, char **av)
+void	clean_stuff(t_data *data)
 {
-	t_data data;
+	int	i;
+
+	i = -1;
+	ft_malloc(0, 1);
+	while (++i < data->philo_nb)
+		pthread_mutex_destroy(&data->forks[i].fork);
+	pthread_mutex_destroy(&data->end_mtx);
+	pthread_mutex_destroy(&data->print);
+	pthread_mutex_destroy(&data->run_mtx);
+}
+
+int	main(int ac, char **av)
+{
+	t_data	data;
 	int		i;
 
 	i = -1;
@@ -107,13 +146,18 @@ int main(int ac, char **av)
 		return (1);
 	data_init(&data, av);
 	threads_init(&data);
-
-	while (++i < data.philo_nb)
-	{
-		if (pthread_join(data.philos[i].thread, NULL))
-			clean_exit("error joining thread");
-	}
 	if (pthread_join(data.monitor, NULL))
-		clean_exit("error joining thread");
+		return (1);
+	if (data.end)
+	{
+		while (++i < data.philo_nb)
+			if (pthread_detach(data.philos[i].thread))
+				return (1);
+	}
+	else
+		while (++i < data.philo_nb)
+			if (pthread_join(data.philos[i].thread, NULL))
+				return (1);
+	clean_stuff(&data);
 	return (0);
 }

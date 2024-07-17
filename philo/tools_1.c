@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/16 17:21:46 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/07/17 07:52:45 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	ft_len(char *str)
 {
-	int	 i;
+	int	i;
 
 	i = 0;
 	while (str[i])
@@ -70,7 +70,7 @@ long long	my_gettime(char *time)
 	struct timeval	tv;
 
 	if (gettimeofday(&tv, NULL))
-		clean_exit("error getting time of day");
+		return (-1);
 	if (!ft_cmp(time, "SEC"))
 		return (tv.tv_sec + (tv.tv_usec / 1e6));
 	else if (!ft_cmp(time, "MIL_SEC"))
@@ -78,20 +78,24 @@ long long	my_gettime(char *time)
 	else if (!ft_cmp(time, "MIC_SEC"))
 		return ((tv.tv_sec * 1e6) + tv.tv_usec);
 	else
-	{
-		clean_exit("check my_gettime() args");
-		return (1);
-	}
+		return (-1);
 }
 
-void	my_usleep(long long usec)
+int	my_usleep(long long usec)
 {
 	long long	start;
+	long long	curr;
+
 	start = my_gettime("MIC_SEC");
+	if (start == -1)
+		return (1);
 	while (1)
 	{
-		if (my_gettime("MIC_SEC") - start >= usec)
-			break;
-		// usleep(100);
+		curr = my_gettime("MIC_SEC");
+		if (curr == -1)
+			return (1);
+		if (curr - start >= usec)
+			break ;
 	}
+	return (0);
 }
