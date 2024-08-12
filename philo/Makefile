@@ -1,11 +1,10 @@
 NAME 	= philo
 CC 		= cc
-CFLAGS	= #-Wall -Wextra -Werror
+# CFLAGS	= -fsanitize=thread #-Wall -Wextra -Werror
 HEADER	= philo.h
 OBJ_DR 	= objs/
 
 SRCS	=	main.c	\
-			grbg_cllctor.c	\
 			tools_1.c		\
 			init.c			\
 			simulation.c	\

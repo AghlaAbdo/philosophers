@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/17 07:52:45 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/12 12:14:40 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ int	my_usleep(long long usec)
 			return (1);
 		if (curr - start >= usec)
 			break ;
+		usleep(500);
 	}
 	return (0);
 }

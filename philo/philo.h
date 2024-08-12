@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/17 13:21:59 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/07 15:45:06 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ typedef struct s_philo
 	long long	last_meal;
 	t_mtx		lstml_mx;
 	t_mtx		dead_mtx;
+	t_mtx		full_mtx;
 	pthread_t	thread;
 	t_data		*data;
 	t_fork		*first_fork;
@@ -57,11 +58,14 @@ typedef struct s_data
 	long long	die_time;
 	long long	eat_time;
 	long long	slp_time;
-	long long	simul_strt;
+	 long long	simul_strt;
 	long long	running;
 	int			meals_nb;
 	int			end;
-	pthread_t	monitor;
+	int			status;
+	pthread_t	monitor1;
+	pthread_t	monitor2;
+	t_mtx		strt_mtx;
 	t_mtx		print;
 	t_mtx		end_mtx;
 	t_mtx		run_mtx;
@@ -71,17 +75,19 @@ typedef struct s_data
 
 int			data_init(t_data *data, char **av);
 int			threads_init(t_data *data);
-int			print_status(t_data *data, t_philo *philo, char *status);
+int			print_status(t_data *data, t_philo *philo, char *status, long long strt);
 long long	my_gettime(char *time);
 int			my_usleep(long long usec);
 long long	ft_atol(const char *str);
-void		*ft_malloc(size_t size, int mode);
 int			ft_cmp(char *s1, char *s2);
 int			ft_len(char *str);
-// void		clean_exit(char *err);
 void		*simulation(void *arg);
-void		*monitor(void *arg);
+int			simul_init(void *arg, t_philo *philo, t_data *data);
+void		*monitor1(void *arg);
+void		*monitor2(void *arg);
 int			wait_rest(t_data *data);
+int			sync_philos(t_philo *philo);
+void		set_error(t_data *data, int err);
 
 // getter and setters
 int			get_bool(t_mtx *mtx, int *value);
