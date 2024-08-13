@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 20:03:29 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/12 12:14:40 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:56:10 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,10 +93,10 @@ int	my_usleep(long long usec)
 	{
 		curr = my_gettime("MIC_SEC");
 		if (curr == -1)
-			return (1);
+			return (printf("curr ic -2?\n"), 1);
 		if (curr - start >= usec)
 			break ;
-		usleep(500);
+		usleep(100);
 	}
 	return (0);
 }

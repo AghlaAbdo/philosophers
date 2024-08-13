@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 20:15:22 by aaghla            #+#    #+#             */
-/*   Updated: 2024/08/12 12:33:45 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 11:09:34 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ int print_status(t_data *data, t_philo *philo, char *stat, long long strt)
 {
 	if (pthread_mutex_lock(&data->print))
 		return (1);
-	if (!get_bool(&data->end_mtx, &data->end))
+	if (!get_int(&data->end_mtx, &data->end))
 	{
 		strt = get_long(&data->strt_mtx, &data->simul_strt);
 		if (!ft_cmp(stat, "FORK"))
@@ -43,7 +43,7 @@ int print_status(t_data *data, t_philo *philo, char *stat, long long strt)
 				   philo->id);
 	}
 	if (pthread_mutex_unlock(&data->print))
-		return (1);
+		return (printf("unlock\n"), 1);
 	return (0);
 }
 
@@ -56,13 +56,14 @@ static int eat(t_philo *philo)
 		return (1);
 	if (print_status(data, philo, "FORK", 0))
 		return (1);
-	if (pthread_mutex_lock(&philo->second_fork->fork) || set_long(&philo->lstml_mx, &philo->last_meal, my_gettime("MIL_SEC")))
+	if (pthread_mutex_lock(&philo->second_fork->fork)
+		|| set_long(&philo->lstml_mx, &philo->last_meal, my_gettime("MIL_SEC")))
 		return (1);
 	if (print_status(data, philo, "FORK", 0) || print_status(data, philo, "EAT", 0))
 		return (1);
 	philo->meals++;
 	if (data->meals_nb > 0 && philo->meals == data->meals_nb)
-		set_bool(&philo->full_mtx, &philo->full, 1);
+		increase_int(&data->full_mtx, &data->full, "++");
 	if (my_usleep(data->eat_time))
 		return (1);
 	if (pthread_mutex_unlock(&philo->second_fork->fork))
@@ -78,35 +79,14 @@ static int think(t_data *data, t_philo *philo)
 
 	if (print_status(data, philo, "THNK", 0))
 		return (1);
-	if (data->philo_nb % 2 == 0)
-		return (0);
-	think = philo->data->eat_time * 2 - philo->data->slp_time;
-	if (think > 0)
-		if (my_usleep(think * 0.45))
-			return (1);
 	return (0);
 }
 
 int sync_philos(t_philo *philo)
 {
-	long long think;
-
-	// if (philo->data->philo_nb % 2 == 0)
-	// {
-		if (philo->id % 2 == 0)
-			if (my_usleep(1000))
-				return (1);
-	// }
-	// else
-	// {
-	// 	if (philo->id % 2)
-	// 	{
-	// 		think = philo->data->eat_time * 2 - philo->data->slp_time;
-	// 		if (think > 0)
-	// 			if (my_usleep(think * 0.45))
-	// 				return (1);
-	// 	}
-	// }
+	if (philo->id % 2 == 0)
+		if (my_usleep(1000))
+			return (1);
 	return (0);
 }
 
@@ -120,29 +100,45 @@ void *simulation(void *arg)
 	data = philo->data;
 	if (simul_init(arg, philo, data))
 		return (NULL);
-	// return (set_error(data, 3), NULL);
+	if (data->philo_nb == 1)
+	{
+		print_status(data, philo, "FORK", 0);
+		my_usleep(data->die_time * 1e3 + 2e4);
+			return (NULL);
+	}
 	while (1)
 	{
-		end = get_bool(&data->end_mtx, &data->end);
-		if (end || get_bool(&philo->full_mtx, &philo->full))
+		end = get_int(&data->end_mtx, &data->end);
+		if (end)
 			break;
 		// printf("philo->full add: %p\n", &philo->full);
-		if (eat(philo) || print_status(data, philo, "SLP", 0) || end == -1)
+		if (end == -1 || eat(philo) || print_status(data, philo, "SLP", 0)
+				|| my_usleep(philo->data->slp_time) || think(data, philo))
 			return (NULL);
-		// return (set_error(data, 4), NULL);
-		// if (get_bool(&philo->full_mtx, &philo->full))
+		// if (end == -1)
+		// 	return (printf("from end?\n"), set_error(data, 4), NULL);
+		// if (eat(philo))
+		// 	return (printf("from eat?\n"), set_error(data, 5), NULL);
+		// if (print_status(data, philo, "SLP", 0))
+		// 	return (printf("from print?\n"), set_error(data, 6), NULL);
+		// if (my_usleep(philo->data->slp_time))
+		// 	return (printf("from usleep?\n"), set_error(data, 7), NULL);
+		// if (think(data, philo))
+		// 	return (printf("from think?\n"), set_error(data, 8), NULL);
+			// return (NULL);
+		// if (get_int(&philo->full_mtx, &philo->full))
 		// 	break;
 		// printf("slp_time add: %p\n", &philo->data->slp_time);
-		if (my_usleep(philo->data->slp_time))
-			return (NULL);
+		// if (my_usleep(philo->data->slp_time))
+		// 	return (NULL);
 		// return (set_error(data, 5), NULL);
-		if (think(data, philo))
-			return (NULL);
+		// if (think(data, philo))
+		// 	return (NULL);
 		// return (set_error(data, 6), NULL);
 	}
-	usleep(100 * philo->id);
-	if (increase_long(&data->run_mtx, &data->running, "--") == -1)
-		return (NULL);
+	// usleep(100 * philo->id);
+	// if (increase_long(&data->run_mtx, &data->running, "--") == -1)
+	// 	return (NULL);
 	// return (set_error(data, 6), NULL);
 	return (NULL);
 }

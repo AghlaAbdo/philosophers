@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 18:54:49 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/11 13:15:12 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:36:58 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ static int	philos_init(t_data *data, t_philo *philo, int i)
 		philo->meals = 0;
 		philo->full = 0;
 		philo->is_dead = 0;
-		philo->first_fork = &data->forks[i];
 		philo->last_meal = my_gettime("MIL_SEC");
+		philo->first_fork = &data->forks[i];
 		philo->second_fork = &data->forks[(i + 1) % data->philo_nb];
 		if ((i +1) % 2 == 0)
 		{
@@ -37,7 +37,7 @@ static int	philos_init(t_data *data, t_philo *philo, int i)
 			return (1);
 		data->forks[i].id = i;
 		if (!data->meals_nb)
-			set_bool(&philo->full_mtx, &philo->full, 1);
+			set_int(&philo->full_mtx, &philo->full, 1);
 	}
 	return (0);
 }
@@ -52,15 +52,14 @@ int	data_init(t_data *data, char **av)
 	data->running = 0;
 	data->meals_nb = -1;
 	data->status = 0;
+	data->full = 0;
 	if (av[5])
 		data->meals_nb = (int)ft_atol(av[5]);
-	// printf("meals: %d\n", data->meals_nb);
-	data->forks = malloc(sizeof(t_fork) * data->philo_nb);
-	data->philos = malloc(sizeof(t_philo) * data->philo_nb);
-	// printf("forks add: %p\nphilos add: %p\n", forks, phi)
 	if (pthread_mutex_init(&data->end_mtx, NULL)
 		|| pthread_mutex_init(&data->print, NULL)
 		|| pthread_mutex_init(&data->run_mtx, NULL)
+		|| pthread_mutex_init(&data->full_mtx, NULL)
+		|| pthread_mutex_init(&data->stat_mtx, NULL)
 		|| pthread_mutex_init(&data->strt_mtx, NULL))
 		return (1);
 	return (philos_init(data, NULL, -1));
@@ -78,14 +77,13 @@ int	threads_init(t_data *data)
 	// 	set_long(&data->philos[i].lstml_mx, &data->philos[i].last_meal, my_gettime("MIL_SEC"));
 		if (pthread_create(&data->philos[i].thread, NULL,
 				&simulation, &data->philos[i]))
-		
 			return (1);
 	}
 	// i = -1;
 	long long meal = my_gettime("MIL_SEC");
-	set_long(&data->strt_mtx, &data->simul_strt, meal);
 	while (++i < data->philo_nb)
 		data->philos[i].last_meal = meal;
+	set_long(&data->strt_mtx, &data->simul_strt, meal);
 		
 	// data->simul_strt = my_gettime("MIL_SEC");
 	// usleep(100000);

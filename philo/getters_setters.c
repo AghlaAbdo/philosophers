@@ -6,13 +6,13 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/28 12:47:40 by thedon            #+#    #+#             */
-/*   Updated: 2024/07/17 11:18:10 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 09:33:00 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	get_bool(t_mtx *mtx, int *value)
+int	get_int(t_mtx *mtx, int *value)
 {
 	int	res;
 
@@ -24,7 +24,7 @@ int	get_bool(t_mtx *mtx, int *value)
 	return (res);
 }
 
-int	set_bool(t_mtx *mtx, int *set, int value)
+int	set_int(t_mtx *mtx, int *set, int value)
 {
 	if (pthread_mutex_lock(mtx))
 		return (-1);

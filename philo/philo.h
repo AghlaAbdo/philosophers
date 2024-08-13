@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/07 15:45:06 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 10:44:39 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 // # include <stdbool.h>
 # include <sys/time.h>
 
+#define MAX_PHLOS	300
 typedef struct s_data	t_data;
 typedef pthread_mutex_t	t_mtx;
 
@@ -58,19 +59,22 @@ typedef struct s_data
 	long long	die_time;
 	long long	eat_time;
 	long long	slp_time;
-	 long long	simul_strt;
+	long long	simul_strt;
 	long long	running;
+	int			full;
 	int			meals_nb;
 	int			end;
 	int			status;
 	pthread_t	monitor1;
 	pthread_t	monitor2;
+	t_mtx		stat_mtx;
+	t_mtx		full_mtx;
 	t_mtx		strt_mtx;
 	t_mtx		print;
 	t_mtx		end_mtx;
 	t_mtx		run_mtx;
-	t_fork		*forks;
-	t_philo		*philos;
+	t_fork		forks[MAX_PHLOS];
+	t_philo		philos[MAX_PHLOS];
 }	t_data;
 
 int			data_init(t_data *data, char **av);
@@ -84,16 +88,15 @@ int			ft_len(char *str);
 void		*simulation(void *arg);
 int			simul_init(void *arg, t_philo *philo, t_data *data);
 void		*monitor1(void *arg);
-void		*monitor2(void *arg);
 int			wait_rest(t_data *data);
 int			sync_philos(t_philo *philo);
-void		set_error(t_data *data, int err);
 
 // getter and setters
-int			get_bool(t_mtx *mtx, int *value);
-int			set_bool(t_mtx *mtx, int *set, int value);
-long long	get_long(t_mtx *mtx, long long *value);
+int			get_int(t_mtx *mtx, int *value);
+int			set_int(t_mtx *mtx, int *set, int value);
 int			set_long(t_mtx *mtx, long long *set, long long value);
+int			increase_int(t_mtx *mtx, int *num, char *op);
 int			increase_long(t_mtx *mtx, long long *num, char *op);
+long long	get_long(t_mtx *mtx, long long *value);
 
 #endif
