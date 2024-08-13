@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/13 10:44:39 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/13 11:55:53 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,18 +18,12 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <limits.h>
-// # include <stdbool.h>
 # include <sys/time.h>
 
-#define MAX_PHLOS	300
+# define MAX_PHLOS	300
+
 typedef struct s_data	t_data;
 typedef pthread_mutex_t	t_mtx;
-
-typedef struct s_addr
-{
-	void			*addr;
-	struct s_addr	*next;
-}	t_addr;
 
 typedef struct s_fork
 {
@@ -41,12 +35,8 @@ typedef struct s_philo
 {
 	int			id;
 	int			meals;
-	int			full;
-	int			is_dead;
 	long long	last_meal;
 	t_mtx		lstml_mx;
-	t_mtx		dead_mtx;
-	t_mtx		full_mtx;
 	pthread_t	thread;
 	t_data		*data;
 	t_fork		*first_fork;
@@ -79,7 +69,8 @@ typedef struct s_data
 
 int			data_init(t_data *data, char **av);
 int			threads_init(t_data *data);
-int			print_status(t_data *data, t_philo *philo, char *status, long long strt);
+int			prnt_stat(t_data *data, t_philo *philo,
+				char *status, long long strt);
 long long	my_gettime(char *time);
 int			my_usleep(long long usec);
 long long	ft_atol(const char *str);
@@ -87,9 +78,10 @@ int			ft_cmp(char *s1, char *s2);
 int			ft_len(char *str);
 void		*simulation(void *arg);
 int			simul_init(void *arg, t_philo *philo, t_data *data);
-void		*monitor1(void *arg);
+void		*monitor(void *arg);
 int			wait_rest(t_data *data);
 int			sync_philos(t_philo *philo);
+void		clean_stuff(t_data *data);
 
 // getter and setters
 int			get_int(t_mtx *mtx, int *value);
