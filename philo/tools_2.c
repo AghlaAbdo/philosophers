@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/13 08:18:56 by aaghla            #+#    #+#             */
-/*   Updated: 2024/08/13 11:42:31 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/15 10:56:59 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,4 @@ void	clean_stuff(t_data *data)
 	pthread_mutex_destroy(&data->run_mtx);
 	pthread_mutex_destroy(&data->strt_mtx);
 	pthread_mutex_destroy(&data->full_mtx);
-	pthread_mutex_destroy(&data->stat_mtx);
 }

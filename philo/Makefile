@@ -1,7 +1,6 @@
 NAME 	= philo
 CC 		= cc
-# CFLAGS	= -fsanitize=thread #-Wall -Wextra -Werror
-# CFLAGS	= -Wall -Wextra -Werror
+CFLAGS	= -Wall -Wextra -Werror
 HEADER	= philo.h
 OBJ_DR 	= objs/
 

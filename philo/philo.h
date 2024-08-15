@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:19:14 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/13 11:55:53 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/15 11:19:34 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,10 +54,8 @@ typedef struct s_data
 	int			full;
 	int			meals_nb;
 	int			end;
-	int			status;
 	pthread_t	monitor1;
 	pthread_t	monitor2;
-	t_mtx		stat_mtx;
 	t_mtx		full_mtx;
 	t_mtx		strt_mtx;
 	t_mtx		print;
@@ -77,7 +75,7 @@ long long	ft_atol(const char *str);
 int			ft_cmp(char *s1, char *s2);
 int			ft_len(char *str);
 void		*simulation(void *arg);
-int			simul_init(void *arg, t_philo *philo, t_data *data);
+int			simul_init(t_philo *philo, t_data *data);
 void		*monitor(void *arg);
 int			wait_rest(t_data *data);
 int			sync_philos(t_philo *philo);

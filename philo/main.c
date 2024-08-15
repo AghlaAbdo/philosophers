@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/06/25 19:21:28 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/13 11:54:56 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/15 11:19:11 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,8 @@ int	run_check(t_data *data, long long last_meal, int i)
 			return (1);
 		if (my_gettime("MIL_SEC") - last_meal > data->die_time +1)
 		{
-			if (prnt_stat(data, data->philos + i, "DIE", 0)
-				|| set_int(&data->end_mtx, &data->end, 1))
-				return (1);
+			prnt_stat(data, data->philos + i, "DIE", 0);
+			set_int(&data->end_mtx, &data->end, 1);
 			return (1);
 		}
 	}
@@ -34,7 +33,6 @@ int	run_check(t_data *data, long long last_meal, int i)
 void	*monitor(void *arg)
 {
 	t_data		*data;
-	long long	last_meal;
 	int			full;
 	int			end;
 	int			i;

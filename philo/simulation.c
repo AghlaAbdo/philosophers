@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 20:15:22 by aaghla            #+#    #+#             */
-/*   Updated: 2024/08/13 11:41:04 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/15 11:20:04 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,6 @@ static int	eat(t_philo *philo)
 
 static int	think(t_data *data, t_philo *philo)
 {
-	long long	think;
-
 	if (prnt_stat(data, philo, "THNK", 0))
 		return (1);
 	return (0);
@@ -91,12 +89,12 @@ void	*simulation(void *arg)
 
 	philo = (t_philo *)arg;
 	data = philo->data;
-	if (simul_init(arg, philo, data))
+	if (simul_init(philo, data))
 		return (NULL);
 	if (data->philo_nb == 1)
 	{
 		prnt_stat(data, philo, "FORK", 0);
-		my_usleep(data->die_time * 1e3 + 2e4);
+		my_usleep(data->die_time * 1e3 + 3e4);
 		return (NULL);
 	}
 	while (1)

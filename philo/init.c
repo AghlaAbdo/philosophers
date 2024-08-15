@@ -6,7 +6,7 @@
 /*   By: aaghla <aaghla@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/03 18:54:49 by thedon            #+#    #+#             */
-/*   Updated: 2024/08/13 11:36:17 by aaghla           ###   ########.fr       */
+/*   Updated: 2024/08/15 11:19:24 by aaghla           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,6 @@ int	data_init(t_data *data, char **av)
 	data->end = 0;
 	data->running = 0;
 	data->meals_nb = -1;
-	data->status = 0;
 	data->full = 0;
 	if (av[5])
 		data->meals_nb = (int)ft_atol(av[5]);
@@ -53,7 +52,6 @@ int	data_init(t_data *data, char **av)
 		|| pthread_mutex_init(&data->print, NULL)
 		|| pthread_mutex_init(&data->run_mtx, NULL)
 		|| pthread_mutex_init(&data->full_mtx, NULL)
-		|| pthread_mutex_init(&data->stat_mtx, NULL)
 		|| pthread_mutex_init(&data->strt_mtx, NULL))
 		return (1);
 	return (philos_init(data, NULL, -1));
@@ -82,7 +80,7 @@ int	threads_init(t_data *data)
 	return (0);
 }
 
-int	simul_init(void *arg, t_philo *philo, t_data *data)
+int	simul_init(t_philo *philo, t_data *data)
 {
 	if (increase_long(&data->run_mtx, &data->running, "++") == -1
 		|| wait_rest(data) || sync_philos(philo))
